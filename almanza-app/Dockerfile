@@ -1,3 +1,4 @@
+#docker run -d --hostname almanza-app --name almanza-app -p 8080:8080 --env RABBITMQ=172.17.0.2 almanza-app
 FROM python:3
 
 WORKDIR /usr/src/app
