@@ -1,0 +1,156 @@
+# - name: Create EKS ROLE
+#   community.aws.iam_role:
+#     name: eks-role
+#     assume_role_policy_document: "{{ lookup('file','policy.json') }}"
+#     #assume_role_policy_document: 
+#     description: role to admin eks resources
+#     tags:
+#       env: dev
+#   register: result
+
+# - name: Create EKS ROLE
+#   community.aws.iam:
+#     iam_type: role
+#     name: eks-almanza-role
+#     state: present
+#     trust_policy:
+#       Version: '2012-10-17'
+#       Statement:
+#       - Action: sts:AssumeRole
+#         Effect: Allow
+#         Principal:
+#           Service: eks.amazonaws.com
+#   register: result
+
+# - name: check iam
+#   debug: 
+#     var: result.instance_profile_result.arn
+
+# - name: ASSOCIATE EKS ROLE POLICY
+#   shell: aws iam attach-role-policy --role-name eks-almanza-role --policy-arn arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+
+#https://docs.aws.amazon.com/es_es/eks/latest/userguide/service_IAM_role.html
+- name: CREATE EKS ROLE 
+  shell: aws iam create-role --role-name {{ eksRoleName }} --assume-role-policy-document file://roles/eks/files/policy.json --output json
+  register: resultIam
+  ignore_errors: true
+  tags: all
+
+#- name: SETTING FACT IAM JSON 
+- set_fact:
+    iam_output: "{{ resultIam.stdout|from_json }}"
+  tags: all
+
+- name: check iam
+  debug: 
+    var: iam_output.Role.Arn
+  tags: all
+
+- name: ASSOCIATE EKS ROLE POLICY
+  shell: aws iam attach-role-policy --role-name {{ eksRoleName }} --policy-arn arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+  ignore_errors: true
+
+#https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html#create-cluster-cli
+- name: CREATE EKS CLUSTER
+  shell: aws eks create-cluster --region {{ region }} --name {{ clusterName }} --kubernetes-version {{ kversion }} --role-arn {{ iam_output.Role.Arn }} --resources-vpc-config subnetIds=subnet-2aff814c,subnet-d1c17a8b,subnet-5b6b2213,securityGroupIds=sg-0465788ce730ebf73
+  tags: all
+
+- name: CHECK EKS STATUS
+  command: 'aws eks --region {{ region }} describe-cluster --name {{ clusterName }} --query "cluster.status"'
+  register: clusterStatus
+  retries: 20
+  delay: 60
+  until: clusterStatus.stdout == "\"ACTIVE\""
+  tags: all, eksWorkernode
+
+- name: check eks status
+  debug: 
+    var: clusterStatus
+  tags: all,eksWorkernode
+
+- name: UPDATE KUBECONFIG
+  shell: aws eks --region {{ region }} update-kubeconfig --name {{ clusterName }}
+  tags: all,eksWorkernode
+
+- name: Build nodegroup template
+  template:
+    src: roles/eks/templates/nodegroup.j2
+    dest: /tmp/nodegroup.yaml
+  tags: all,template,eksWorkernode
+
+- name: CREATE CF STACK 
+  shell: aws cloudformation create-stack --region {{ region }} --stack-name {{ clusterName }} --capabilities CAPABILITY_NAMED_IAM --template-body file:///tmp/nodegroup.yaml
+  #register: cfstack
+  tags: all,template
+
+- name: CHECK CF STACK STATUS TO CONTIENUE
+  command: 'aws cloudformation describe-stacks --region eu-west-1 --stack-name almanzaCluster --output text --query "Stacks[*].StackStatus"'
+  register: cfstackStatus
+  retries: 10
+  delay: 60
+  until: cfstackStatus.stdout == "CREATE_COMPLETE"
+  tags: all, eksWorkernode,auth
+
+# - name: WAITING TO CF STACK 
+#   pause:
+#     minutes: 10
+#   tags: all,template,eksWorkernode
+
+- name: DESCRIBE CF STACK TO GET CLUSTER ROLE NAME
+  shell: aws cloudformation describe-stacks --region {{ region }} --stack-name {{ clusterName }} --output text --query Stacks[*].Outputs[0].OutputValue
+  register: cfstack
+  tags: all,auth,eksWorkernode
+
+# - set_fact:
+#     cfstack_output: "{{ cfstack.stdout|from_json }}"
+#   tags: all,auth
+
+# - name: check iam
+#   debug: 
+#     var: cfstack_output.Stacks[0]
+#   tags: all,auth
+
+- set_fact:
+    cfstack_output: "{{ cfstack.stdout }}"
+  tags: all,auth,eksWorkernode
+
+- name: check cfstack
+  debug: 
+    var: cfstack_output
+  tags: all,auth,eksWorkernode
+
+- name: nodegroup aws auth CM
+  template:
+    src: roles/eks/templates/aws-auth-cm.j2
+    dest: /tmp/aws-auth-cm.yaml
+  tags: all,templateCM, eksWorkernode,auth
+
+- name: APPLY AWS AUTH CM
+  shell: kubectl apply -f /tmp/aws-auth-cm.yaml
+  tags: all,eksWorkernode
+
+#{{ cf_output.NodeInstanceRole.Arn }}
+
+# - name: CREATE EKS NODEGROUP
+#   shell: "eksctl create nodegroup --region {{ region }} --cluster {{ clusterName }} --version {{ kversion }} --name {{ clusterName }}"
+#   tags:
+#   - eksWorkernode
+
+
+# - name: CREATE EKS NODEGROUP
+#   shell: eksctl create nodegroup --cluster {{ clusterName }} --region eu-west-1 --name almanzang --node-type t3.medium --nodes 1 --nodes-min 1 --nodes-max 2 --ssh-access --ssh-public-key key-01ea48a36f75f424b --managed
+#   tags:
+#   - eksWorkernode
+
+# - name: Create an EKS cluster
+#   community.aws.aws_eks_cluster:
+#     name: almanza-EKS
+#     version: "1.16"
+#     role_arn: result.instance_profile_result.arn
+#     region: "eu-west-1"
+#     subnets:
+#       - subnet-2aff814c
+#       - subnet-d1c17a8b
+#       - subnet-5b6b2213
+#     security_groups:
+#       - sg-0465788ce730ebf73

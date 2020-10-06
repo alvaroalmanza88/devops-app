@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: almanza
+spec: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: almanza-app
+  namespace: almanza
+  labels:
+    app: almanza
+spec:
+  selector:
+    app: almanza
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: almanza
+  namespace: almanza
+  labels:
+    app: almanza
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: almanza
+  template:
+    metadata:
+      name: web-server
+      labels:
+        app: almanza
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80

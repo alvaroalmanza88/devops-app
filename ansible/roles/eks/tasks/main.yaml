@@ -1,0 +1,11 @@
+- name: DEPLOY EKS CLUSTER
+  import_tasks: deploy.yaml
+  tags:
+  - deploy
+  - deploy-eks
+
+- name: DEPLOY EKS CLUSTER
+  import_tasks: remove.yaml
+  tags:
+  - remove
+  - remove-eks

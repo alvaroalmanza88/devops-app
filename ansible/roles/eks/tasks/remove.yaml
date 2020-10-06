@@ -1,0 +1,20 @@
+#https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html#create-cluster-cli
+# - name: DELETE EKS WORKER NODES
+#   shell: eksctl delete nodegroup --cluster={{ clusterName }} --name={{ clusterName }}-nodes
+#   tags: deleteWorkerNodes
+
+- name: DELETE K8S APP
+  shell: kubectl delete namespace almanza
+  tags: deletek8sApp
+
+- name: DELETE CF STACK
+  shell: aws cloudformation delete-stack --region {{ region }} --stack-name {{ clusterName }}
+  tags: deleteCFstack
+
+- name: DELETE EKS CLUSTER
+  shell: aws eks delete-cluster --region {{ region }} --name {{ clusterName }}
+  tags: deleteEksCluster
+
+- name: Delete IAM Role
+  shell: aws iam detach-role-policy --role-name {{ eksRoleName }} --policy-arn arn:aws:iam::aws:policy/AmazonEKSClusterPolicy && aws iam delete-role --role-name {{ eksRoleName }}
+
