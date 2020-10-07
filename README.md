@@ -27,6 +27,6 @@ Execute the container mounting the prepared jenkins_home on this repo on the jen
 
 Once the container is mounted can access using localhost:8080 without any pass. there will be some pipeline prepared:
 
-![](image.png)
+![](image 1.png)
 
 
