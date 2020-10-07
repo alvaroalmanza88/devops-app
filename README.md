@@ -40,3 +40,8 @@ The third one is to delete the the infra and application.
 
 The pipeline and ansible job is prepared to deploy the next architecture:
 
+
+![alt text](https://github.com/alvaroalmanza88/devops-app/blob/main/images/image2.png)
+
+
+The main goal of the application is push message into the queue using rabbit. Then there will be a python script consumer to check that the message are being stored in the rabbitqm system.
