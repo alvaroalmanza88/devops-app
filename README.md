@@ -27,6 +27,16 @@ Execute the container mounting the prepared jenkins_home on this repo on the jen
 
 Once the container is mounted can access using localhost:8080 without any pass. there will be some pipeline prepared:
 
-![](image 1.png)
+![alt text](https://github.com/alvaroalmanza88/devops-app/blob/main/images/image1.png)
 
+
+
+The first one pipeline "aws-redentials" will be necesary to implement the AWS Credentials that allows jenkins create de infraestructure
+
+
+The Second one is the pipeline in charge to deploy the infraestructure and the aplication just filling filling out the form
+
+The third one is to delete the the infra and application.
+
+The pipeline and ansible job is prepared to deploy the next architecture:
 
