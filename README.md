@@ -81,8 +81,6 @@ The main goal of the application is push message into the queue using rabbit. Th
 ![alt text](https://github.com/alvaroalmanza88/devops-app/blob/main/images/evidence6.png)
 
 
-![alt text](https://github.com/alvaroalmanza88/devops-app/blob/main/images/evidence7.png)
-
 
 
 ![alt text](https://github.com/alvaroalmanza88/devops-app/blob/main/images/evidence8.png)
