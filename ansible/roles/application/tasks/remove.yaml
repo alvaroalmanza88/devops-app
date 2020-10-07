@@ -1,0 +1,12 @@
+
+- name: Kubernetes delete rabbit
+  shell: kubectl delete -f /tmp/rabbitDeployment.yaml
+  tags: deletek8srabbit
+
+- name: Kubernetes delete almanza-app
+  shell: kubectl delete -f /tmp/appDeployment.yaml
+  tags: deletek8srabbit
+
+- name: Kubernetes delete consumer
+  shell: kubectl delete -f /tmp/appConsumer.yaml
+  tags: deletek8consumer

@@ -1,0 +1,11 @@
+--- # Master playbook para servidores web
+- hosts: localhost
+  gather_facts: no
+  pre_tasks:
+  - name: hora de inicio de ejecucion del playbook
+    raw: date > startofrole.log
+  roles:
+  - application
+  post_tasks: 
+  - name: hora Fin del role
+    raw: date >> startofrole.log

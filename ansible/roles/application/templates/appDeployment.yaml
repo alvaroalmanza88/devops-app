@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: almanza-app
+  name: almanza-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: almanza-app
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: almanza-app
+    spec:
+      containers:
+      - env:
+        - name: RABBITMQ
+          value: almanza-rabbit.default.svc.cluster.local
+        image: alvaroalmanza/almanza-app:v1
+        name: almanza-app
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: almanza-app
+  name: almanza-app
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: almanza-app
+  type: LoadBalancer

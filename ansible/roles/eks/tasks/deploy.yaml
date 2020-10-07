@@ -52,7 +52,7 @@
 
 #https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html#create-cluster-cli
 - name: CREATE EKS CLUSTER
-  shell: aws eks create-cluster --region {{ region }} --name {{ clusterName }} --kubernetes-version {{ kversion }} --role-arn {{ iam_output.Role.Arn }} --resources-vpc-config subnetIds=subnet-2aff814c,subnet-d1c17a8b,subnet-5b6b2213,securityGroupIds=sg-0465788ce730ebf73
+  shell: aws eks create-cluster --region {{ region }} --name {{ clusterName }} --kubernetes-version 1.17 --role-arn {{ iam_output.Role.Arn }} --resources-vpc-config subnetIds={{ subnetIds }},securityGroupIds={{ securityGroupIds }}
   tags: all
 
 - name: CHECK EKS STATUS

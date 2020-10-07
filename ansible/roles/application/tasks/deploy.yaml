@@ -1,0 +1,39 @@
+- name: Build rabbitDeployment template
+  template:
+    src: roles/application/templates/rabbitDeployment.yaml
+    dest: /tmp/rabbitDeployment.yaml
+  tags: all,rabbitDeployment
+
+- name: Build appDeployment template
+  template:
+    src: roles/application/templates/appDeployment.yaml
+    dest: /tmp/appDeployment.yaml
+  tags: all,appDeployment
+
+- name: Build appConsumer template
+  template:
+    src: roles/application/templates/appConsumer.yaml
+    dest: /tmp/appConsumer.yaml
+  tags: all,appDeployment
+
+- name: Kubernetes deploy rabbit
+  shell: kubectl apply -f /tmp/rabbitDeployment.yaml
+  tags: all,k8srabbit
+
+- name: Kubernetes deploy almanza-app
+  shell: kubectl apply -f /tmp/appDeployment.yaml
+  tags: all,k8srabbit
+
+- name: Kubernetes deploy consumer
+  shell: kubectl apply -f /tmp/appConsumer.yaml
+  tags: all,k8srabbit
+
+- name: Kubernetes get endpoint
+  shell: kubectl get svc almanza-app
+  register: svc
+  tags: all,k8sappDeployment
+
+- name: internet endpoint to almanza-app
+  debug: 
+    var: svc.stdout
+  tags: all,eksWorkernode

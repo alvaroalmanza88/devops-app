@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: almanza-consumer
+  name: almanza-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: almanza-consumer
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: almanza-consumer
+    spec:
+      containers:
+      - env:
+        - name: RABBITMQ
+          value: almanza-rabbit.default.svc.cluster.local
+        image: alvaroalmanza/consumer:v1
+        name: almanza-consumer

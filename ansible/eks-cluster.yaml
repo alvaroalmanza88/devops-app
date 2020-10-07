@@ -3,22 +3,22 @@
   gather_facts: no
   collections:
     - community.kubernetes
-  vars:
-    clusterName: "almanzaCluster"
-    region: "eu-west-1"
-    kversion: "1.17"
-    eksRoleName: eksAlmanzaRole
-    subnetIds: ""
-    securityGroupIds: ""
-    clusterNodegroup: ""
-    instanceType: t3.medium
+  #--extra-vars '{"clusterName":"almanzaCluster","region":"eu-west-1","eksRoleName":"eksAlmanzaRole","subnetIds":"subnet-2aff814c,subnet-d1c17a8b,subnet-5b6b2213","securityGroupIds":"sg-0465788ce730ebf73","instanceType":"t3.medium"}'
+  #--extra-vars "clusterName=almanzaCluster,region=eu-west-1,kversion=1.17,eksRoleName=eksAlmanzaRole,subnetIds="subnet-2aff814c\,subnet-d1c17a8b\,subnet-5b6b2213",instanceType=t3.medium"
+  # vars:
+  #   clusterName: "almanzaCluster"
+  #   region: "eu-west-1"
+  #   kversion: "1.17"
+  #   eksRoleName: eksAlmanzaRole
+  #   subnetIds: "subnet-2aff814c,subnet-d1c17a8b,subnet-5b6b2213"
+  #   securityGroupIds: "sg-0465788ce730ebf73"
+  #   clusterNodegroup: ""
+  #   instanceType: t3.medium
   pre_tasks:
   - name: hora de inicio de ejecucion del playbook
     raw: date > startofrole.log
   roles:
   - eks
-  # - { role: redhat_webservers, when: "ansible_os_family == 'RedHat'" }
-  # - { role: debian_webservers, when: "ansible_os_family == 'Debian'" }
   post_tasks: 
   - name: hora Fin del role
     raw: date >> startofrole.log
