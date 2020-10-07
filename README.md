@@ -31,10 +31,10 @@ Once the container is mounted can access using localhost:8080 without any pass. 
 
 
 
-The first one pipeline "aws-redentials" will be necesary to implement the AWS Credentials that allows jenkins create de infraestructure
+The first one pipeline "aws-redentials" will be necesary to implement the AWS Credentials that allows jenkins create the infraestructure
 
 
-The Second one is the pipeline in charge to deploy the infraestructure and the aplication just filling filling out the form
+The Second one is the pipeline in charge to deploy the infraestructure and the aplication just filling  out the form
 
 The third one is to delete the the infra and application.
 
