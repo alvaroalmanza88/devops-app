@@ -22,3 +22,4 @@ spec:
           value: almanza-rabbit.default.svc.cluster.local
         image: alvaroalmanza/consumer:v1
         name: almanza-consumer
+        imagePullPolicy: Always
