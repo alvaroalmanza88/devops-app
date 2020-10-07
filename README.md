@@ -38,6 +38,9 @@ The Second one is the pipeline in charge to deploy the infraestructure and the a
 
 ![alt text](https://github.com/alvaroalmanza88/devops-app/blob/main/images/image1.2.png)
 
+
+The operator has to give information about the VPC where the EKS cluster will be deployed.
+
 The third one is to delete the the infra and application.
 
 The pipeline and ansible job is prepared to deploy the next architecture:
