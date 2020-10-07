@@ -1,0 +1,31 @@
+pipeline {
+    agent any 
+
+    parameters {
+        string(name: 'clusterName', defaultValue: 'almanzaCluster', description: 'Name of the cluster')
+        string(name: 'region', defaultValue: 'eu-west-1', description: 'region to deploy')
+        string(name: 'eksRoleName', defaultValue: 'eksAlmanzaRole', description: 'rol to create and attach to the cluster')
+        string(name: 'subnetIds', defaultValue: 'subnet-2aff814c,subnet-d1c17a8b,subnet-5b6b2213', description: 'subnets to deploy worker nodes')
+        string(name: 'securityGroupIds', defaultValue: 'sg-0465788ce730ebf73', description: 'SG to  k8s api access')
+        string(name: 'instanceType', defaultValue: 't3.medium', description: 'instance to deploy worker nodes')
+    }
+    stages {
+
+        stage('DESTROY application') {
+            steps {
+                sh(script:"""\
+                cd /var/code/
+                ansible-playbook k8s-app.yaml -t remove
+                """)
+            }
+        }
+        stage('DESTROY EKS CLUSTER') {
+            steps {
+                sh(script:"""\
+                    cd /var/code/
+                    ansible-playbook eks-cluster.yaml -t remove --extra-vars '{"clusterName":"${params.clusterName}","region":"${params.region}","eksRoleName":"${params.eksRoleName}","subnetIds":"${params.subnetIds}","securityGroupIds":"${params.securityGroupIds}","instanceType":"${params.instanceType}"}'
+                    """)
+            }
+        }
+    }
+}

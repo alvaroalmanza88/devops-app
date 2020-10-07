@@ -1,0 +1,99 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.40">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@1.7.2"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.7.2">
+      <jobProperties/>
+      <triggers/>
+      <parameters>
+        <string>eksRoleName</string>
+        <string>securityGroupIds</string>
+        <string>clusterName</string>
+        <string>instanceType</string>
+        <string>region</string>
+        <string>subnetIds</string>
+      </parameters>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>clusterName</name>
+          <description>Name of the cluster</description>
+          <defaultValue>almanzaCluster</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>region</name>
+          <description>region to deploy</description>
+          <defaultValue>eu-west-1</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>eksRoleName</name>
+          <description>rol to create and attach to the cluster</description>
+          <defaultValue>eksAlmanzaRole</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>subnetIds</name>
+          <description>subnets to deploy worker nodes</description>
+          <defaultValue>subnet-2aff814c,subnet-d1c17a8b,subnet-5b6b2213</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>securityGroupIds</name>
+          <description>SG to  k8s api access</description>
+          <defaultValue>sg-0465788ce730ebf73</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>instanceType</name>
+          <description>instance to deploy worker nodes</description>
+          <defaultValue>t3.medium</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.83">
+    <script>pipeline {
+    agent any 
+
+    parameters {
+        string(name: &apos;clusterName&apos;, defaultValue: &apos;almanzaCluster&apos;, description: &apos;Name of the cluster&apos;)
+        string(name: &apos;region&apos;, defaultValue: &apos;eu-west-1&apos;, description: &apos;region to deploy&apos;)
+        string(name: &apos;eksRoleName&apos;, defaultValue: &apos;eksAlmanzaRole&apos;, description: &apos;rol to create and attach to the cluster&apos;)
+        string(name: &apos;subnetIds&apos;, defaultValue: &apos;subnet-2aff814c,subnet-d1c17a8b,subnet-5b6b2213&apos;, description: &apos;subnets to deploy worker nodes&apos;)
+        string(name: &apos;securityGroupIds&apos;, defaultValue: &apos;sg-0465788ce730ebf73&apos;, description: &apos;SG to  k8s api access&apos;)
+        string(name: &apos;instanceType&apos;, defaultValue: &apos;t3.medium&apos;, description: &apos;instance to deploy worker nodes&apos;)
+    }
+    stages {
+
+        stage(&apos;DESTROY application&apos;) {
+            steps {
+                sh(script:&quot;&quot;&quot;\
+                cd /var/code/
+                ansible-playbook k8s-app.yaml -t remove
+                &quot;&quot;&quot;)
+            }
+        }
+        stage(&apos;DESTROY EKS CLUSTER&apos;) {
+            steps {
+                sh(script:&quot;&quot;&quot;\
+                    cd /var/code/
+                    ansible-playbook eks-cluster.yaml -t remove --extra-vars &apos;{&quot;clusterName&quot;:&quot;${params.clusterName}&quot;,&quot;region&quot;:&quot;${params.region}&quot;,&quot;eksRoleName&quot;:&quot;${params.eksRoleName}&quot;,&quot;subnetIds&quot;:&quot;${params.subnetIds}&quot;,&quot;securityGroupIds&quot;:&quot;${params.securityGroupIds}&quot;,&quot;instanceType&quot;:&quot;${params.instanceType}&quot;}&apos;
+                    &quot;&quot;&quot;)
+            }
+        }
+    }
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

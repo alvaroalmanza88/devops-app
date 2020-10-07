@@ -1,0 +1,60 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.40">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@1.7.2"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.7.2">
+      <jobProperties/>
+      <triggers/>
+      <parameters>
+        <string>awsid</string>
+        <string>awskey</string>
+      </parameters>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>awsid</name>
+          <description>set the key of aws</description>
+          <defaultValue></defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>awskey</name>
+          <description>set the key of aws</description>
+          <defaultValue></defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.83">
+    <script>pipeline {
+    agent any 
+
+    parameters {
+        string(name: &apos;awsid&apos;, defaultValue: &apos;&apos;, description: &apos;set the key of aws&apos;)
+        string(name: &apos;awskey&apos;, defaultValue: &apos;&apos;, description: &apos;set the key of aws&apos;)
+    }
+    stages {
+        stage(&apos;Setting aws credentials&apos;) {
+            steps {
+                sh(script:&quot;&quot;&quot;\
+                    mkdir  $HOME/.aws
+                    echo [default] &gt; $HOME/.aws/credentials
+                    echo aws_access_key_id=${params.awsid} &gt;&gt; $HOME/.aws/credentials
+                    echo aws_secret_access_key=${params.awskey} &gt;&gt; $HOME/.aws/credentials
+                    &quot;&quot;&quot;,returnStdout: false)
+            }
+        }
+    }
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>
