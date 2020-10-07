@@ -50,3 +50,52 @@ The pipeline and ansible job is prepared to deploy the next architecture:
 
 
 The main goal of the application is push message into the queue using rabbit. Then there will be a python script consumer to check that the message are being stored in the rabbitqm system.
+
+
+#SOME EVIDENCE OF THE PROJECT
+
+![alt text](https://github.com/alvaroalmanza88/devops-app/blob/main/images/evidence1.png)
+
+
+
+![alt text](https://github.com/alvaroalmanza88/devops-app/blob/main/images/evidence2.png)
+
+
+
+
+![alt text](https://github.com/alvaroalmanza88/devops-app/blob/main/images/evidence3.png)
+
+
+
+
+![alt text](https://github.com/alvaroalmanza88/devops-app/blob/main/images/evidence4.png)
+
+
+
+![alt text](https://github.com/alvaroalmanza88/devops-app/blob/main/images/evidence5.png)
+
+
+![alt text](https://github.com/alvaroalmanza88/devops-app/blob/main/images/evidence5.1.png)
+
+
+![alt text](https://github.com/alvaroalmanza88/devops-app/blob/main/images/evidence6.png)
+
+
+![alt text](https://github.com/alvaroalmanza88/devops-app/blob/main/images/evidence7.png)
+
+
+
+![alt text](https://github.com/alvaroalmanza88/devops-app/blob/main/images/evidence8.png)
+
+
+
+![alt text](https://github.com/alvaroalmanza88/devops-app/blob/main/images/evidence9.png)
+
+
+
+
+
+
+
+
+
